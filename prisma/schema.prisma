@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  username String
+  enrollments Enrollment[]
+
+  @@index([username], name: "username_idx") // Index on the username field
+}
+
+model Course {
+  id          Int      @id @default(autoincrement())
+  courseTitle String
+  subject     String
+  sections    CourseSection[]
+  enrollments Enrollment[]
+
+  @@index([courseTitle], name: "courseTitle_idx") // Index on the courseTitle field
+}
+
+model CourseSection {
+  id        Int      @id @default(autoincrement())
+  courseId  Int
+  startTime DateTime
+  endTime   DateTime
+  course    Course   @relation(fields: [courseId], references: [id])
+  enrollments Enrollment[]
+
+  @@index([courseId], name: "courseId_idx") // Index on the courseId field
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  courseId  Int
+  userId    Int
+  sectionId Int
+  course    Course   @relation(fields: [courseId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  section   CourseSection @relation(fields: [sectionId], references: [id])
+
+  @@index([courseId], name: "enrollment_course_idx") // Index on the courseId field
+  @@index([userId], name: "enrollment_user_idx")     // Index on the userId field
+  @@index([sectionId], name: "enrollment_section_idx") // Index on the sectionId field
+}
