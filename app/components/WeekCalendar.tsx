@@ -1,4 +1,3 @@
-// TypeScript type definitions for the prepared data and time block
 type PreparedData = {
   [key: string]: TimeBlockData[];
 };
@@ -20,7 +19,6 @@ const DayColumn = ({
   day: string;
   timeBlocks: TimeBlockData[];
 }) => {
-  // Define the start and end time in minutes for the schedule
   let currentMinutes = convertToMinutes("7:00AM");
   const endMinutes = convertToMinutes("2:00PM");
 
@@ -31,7 +29,7 @@ const DayColumn = ({
       (block) => convertToMinutes(block.startTime) === currentMinutes
     );
     const blockContent = foundCourse ? foundCourse.courseTitle : null;
-
+    const time = foundCourse ? foundCourse.startTime : null;
     timeSlots.push(
       <div
         key={currentMinutes}
@@ -39,11 +37,14 @@ const DayColumn = ({
           Boolean(blockContent) && "bg-indigo-300 text-black"
         }`}
       >
-        {blockContent}
+        <div>
+          <p>{blockContent}</p>
+          <p>{time}</p>
+        </div>
       </div>
     );
 
-    currentMinutes += 60; // Increment by 60 minutes (1 hour)
+    currentMinutes += 60;
   }
 
   return (
