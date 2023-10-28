@@ -4,7 +4,7 @@
     "**/*.ts",
     "**/*.tsx",
     "prisma/seed.js",
-    "app/components/WeekCalendar.jsx"
+    "app/components/WeekCalendar.tsx"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],

@@ -28,11 +28,11 @@ export default function Enrollment() {
     <div className="flex w-screen h-screen text-white border-t border-zinc-800">
       <div className="w-1/3 border-r  border-zinc-800">
         <CourseSearchForm />
-        <div className="h-[calc(100%-73px)] overflow-y-scroll relative">
+        <div className="h-[calc(100%-73px)] overflow-y-auto relative">
           {courses.map((course: any) => (
             <div
               key={course.id}
-              className="p-6 border-b border-zinc-800 hover:bg-indigo-300 hover:text-black"
+              className="p-6 border-b border-zinc-800 hover:bg-indigo-300 hover:text-black border-r"
             >
               <p className="text-lg focus:text-lg font-bold mb-2">
                 {course.courseTitle}
@@ -48,7 +48,7 @@ export default function Enrollment() {
           ))}
         </div>
       </div>
-      <div className="w-2/3 bg-zinc-900">
+      <div className="w-2/3 bg-zinc-900 overflow-y-auto">
         <Outlet />
       </div>
     </div>
