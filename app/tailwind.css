@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Webkit-based browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  position: absolute;
+}
+
+.scrollbar {
+  scrollbar-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.2);
+  position: absolute;
+}

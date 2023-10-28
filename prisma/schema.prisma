@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
@@ -8,48 +5,99 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
-model User {
-  id       Int      @id @default(autoincrement())
-  username String
+model Student {
+  id          Int          @id @unique @default(autoincrement())
+  username    String
   enrollments Enrollment[]
 
-  @@index([username], name: "username_idx") // Index on the username field
+  @@index([username], name: "username_idx")
+}
+
+model Teacher {
+  id            Int             @id @unique @default(autoincrement())
+  username      String
+  CourseSection CourseSection[]
+
+  @@index([username], name: "username_idx")
+}
+
+model Subject {
+  id      Int      @id @unique @default(autoincrement())
+  code    String   @unique
+  name    String
+  courses Course[]
+
+  @@index([code], name: "subject_code_idx")
 }
 
 model Course {
-  id          Int      @id @default(autoincrement())
+  id          Int             @id @unique @default(autoincrement())
   courseTitle String
-  subject     String
+  description String          @db.VarChar(500)
+  subjectId   Int
+  courseCode  String          @default("0000")
   sections    CourseSection[]
   enrollments Enrollment[]
+  subject     Subject         @relation(fields: [subjectId], references: [id])
 
-  @@index([courseTitle], name: "courseTitle_idx") // Index on the courseTitle field
+  @@index([courseTitle], name: "courseTitle_idx")
+  @@index([subjectId], name: "subjectId_idx")
 }
 
 model CourseSection {
-  id        Int      @id @default(autoincrement())
-  courseId  Int
-  startTime DateTime
-  endTime   DateTime
-  course    Course   @relation(fields: [courseId], references: [id])
+  id          Int                @id @unique @default(autoincrement())
+  courseId    Int
+  teacherId   Int
+  startTime   String
+  endTime     String
+  capacity    Int
+  course      Course             @relation(fields: [courseId], references: [id])
   enrollments Enrollment[]
+  days        CourseSectionDay[]
+  teacher     Teacher            @relation(fields: [teacherId], references: [id])
 
-  @@index([courseId], name: "courseId_idx") // Index on the courseId field
+  @@index([courseId], name: "courseId_idx")
+  @@index([teacherId], name: "teacherId_idx")
+}
+
+model CourseSectionDay {
+  id        Int           @id @unique @default(autoincrement())
+  dayOfWeek DayOfWeek
+  sectionId Int
+  section   CourseSection @relation(fields: [sectionId], references: [id])
+
+  @@unique([sectionId, dayOfWeek], name: "unique_section_day")
+  @@index([sectionId], name: "section_day_idx")
 }
 
 model Enrollment {
-  id        Int      @id @default(autoincrement())
+  id        Int              @id @unique @default(autoincrement())
   courseId  Int
-  userId    Int
+  studentId Int
   sectionId Int
-  course    Course   @relation(fields: [courseId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-  section   CourseSection @relation(fields: [sectionId], references: [id])
+  status    EnrollmentStatus
+  course    Course           @relation(fields: [courseId], references: [id])
+  student   Student          @relation(fields: [studentId], references: [id])
+  section   CourseSection    @relation(fields: [sectionId], references: [id])
 
-  @@index([courseId], name: "enrollment_course_idx") // Index on the courseId field
-  @@index([userId], name: "enrollment_user_idx")     // Index on the userId field
-  @@index([sectionId], name: "enrollment_section_idx") // Index on the sectionId field
+  @@index([courseId], name: "enrollment_course_idx")
+  @@index([studentId], name: "enrollment_student_idx")
+  @@index([sectionId], name: "enrollment_section_idx")
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+}
+
+enum EnrollmentStatus {
+  DRAFT
+  Enrolled
 }
