@@ -20,7 +20,7 @@ const DayColumn = ({
   timeBlocks: TimeBlockData[];
 }) => {
   let currentMinutes = convertToMinutes("7:00AM");
-  const endMinutes = convertToMinutes("2:00PM");
+  const endMinutes = convertToMinutes("3:00PM");
 
   const timeSlots = [];
 

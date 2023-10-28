@@ -6,7 +6,6 @@ import { db } from "~/utils/db.server";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const term = url.searchParams.get("search");
-  console.log(term);
   const courses = await db.course.findMany({
     where: {
       courseTitle: { contains: term || "" },
@@ -23,7 +22,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function Enrollment() {
   const { courses } = useLoaderData<any>();
 
-  console.log({ courses });
   return (
     <div className="flex w-screen h-screen text-white border-t border-zinc-800">
       <div className="w-1/3 border-r  border-zinc-800">
