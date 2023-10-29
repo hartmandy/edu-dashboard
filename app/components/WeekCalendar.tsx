@@ -30,12 +30,15 @@ const DayColumn = ({
     );
     const blockContent = foundCourse ? foundCourse.courseTitle : null;
     const time = foundCourse ? foundCourse.startTime : null;
+
+    const borderClass =
+      currentMinutes % 60 === 0 ? "border-solid" : "border-dashed";
+
+    const color = Boolean(blockContent) ? "bg-indigo-300 text-black" : "";
     timeSlots.push(
       <div
         key={currentMinutes}
-        className={`relative border-b border-r border-zinc-800 h-[80px] p-2 ${
-          Boolean(blockContent) && "bg-indigo-300 text-black"
-        }`}
+        className={`relative border-zinc-800 border-b ${borderClass} h-[80px] p-2 ${color}`}
       >
         <div>
           <p>{blockContent}</p>
@@ -44,11 +47,11 @@ const DayColumn = ({
       </div>
     );
 
-    currentMinutes += 60;
+    currentMinutes += 30;
   }
 
   return (
-    <div>
+    <div className="border-r-zinc-800 border-r">
       <div className="py-6 text-center border-b border-r border-zinc-800">
         {day}
       </div>
@@ -87,8 +90,9 @@ const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
         </div>
       );
 
-      currentMinutes += 60;
+      currentMinutes += 30; // Change from 60 to 30
     }
+
     return (
       <div className="fixed">
         <div className="py-6 text-center h-[73px]"></div>
