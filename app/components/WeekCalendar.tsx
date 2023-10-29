@@ -4,6 +4,10 @@ type PreparedData = {
 
 type TimeBlockData = { startTime: string; courseTitle: string };
 
+const START_TIME = "8:00AM";
+const END_TIME = "10:00PM";
+const TIME_INCREMENT = 30;
+
 const convertToMinutes = (time: string): number => {
   const [_, hours, minutes, period] = time.match(/(\d+):(\d+)(AM|PM)/)!;
   let totalMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
@@ -19,8 +23,8 @@ const DayColumn = ({
   day: string;
   timeBlocks: TimeBlockData[];
 }) => {
-  let currentMinutes = convertToMinutes("7:00AM");
-  const endMinutes = convertToMinutes("3:00PM");
+  let currentMinutes = convertToMinutes(START_TIME);
+  const endMinutes = convertToMinutes(END_TIME);
 
   const timeSlots = [];
 
@@ -47,12 +51,12 @@ const DayColumn = ({
       </div>
     );
 
-    currentMinutes += 30;
+    currentMinutes += TIME_INCREMENT;
   }
 
   return (
     <div className="border-r-zinc-800 border-r">
-      <div className="py-6 text-center border-b border-r border-zinc-800">
+      <div className="sticky top-0 py-6 text-center border-b border-r border-zinc-800 bg-zinc-900 z-10">
         {day}
       </div>
       <div className="grid grid-rows-14">{timeSlots}</div>
@@ -71,8 +75,8 @@ const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
   ];
 
   const renderTimeColumn = () => {
-    let currentMinutes = convertToMinutes("7:00AM");
-    const endMinutes = convertToMinutes("2:00PM");
+    let currentMinutes = convertToMinutes(START_TIME);
+    const endMinutes = convertToMinutes(END_TIME);
     const timeSlots = [];
 
     while (currentMinutes <= endMinutes) {
@@ -85,17 +89,20 @@ const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
       }${period}`;
 
       timeSlots.push(
-        <div key={currentMinutes} className="relative  h-[80px] p-2">
+        <div
+          key={currentMinutes}
+          className="relative h-[80px] p-2 border-b border-zinc-800"
+        >
           {formattedTime}
         </div>
       );
 
-      currentMinutes += 30; // Change from 60 to 30
+      currentMinutes += TIME_INCREMENT;
     }
 
     return (
-      <div className="fixed">
-        <div className="py-6 text-center h-[73px]"></div>
+      <div className="sticky left-0 z-20 bg-zinc-900 border-r border-zinc-800">
+        <div className="py-6 text-center h-[73px] border-b border-zinc-800"></div>
         <div className="grid grid-rows-14">{timeSlots}</div>
       </div>
     );
