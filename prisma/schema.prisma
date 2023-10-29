@@ -79,7 +79,7 @@ model Enrollment {
   courseId  Int
   studentId Int
   sectionId Int
-  status    EnrollmentStatus
+  status    EnrollmentStatus @default(DRAFT)
   course    Course           @relation(fields: [courseId], references: [id])
   student   Student          @relation(fields: [studentId], references: [id])
   section   CourseSection    @relation(fields: [sectionId], references: [id])
@@ -99,5 +99,5 @@ enum DayOfWeek {
 
 enum EnrollmentStatus {
   DRAFT
-  Enrolled
+  ENROLLED
 }

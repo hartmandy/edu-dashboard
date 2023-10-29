@@ -2,6 +2,7 @@ import { useLoaderData } from "@remix-run/react";
 import WeekCalendar from "~/components/WeekCalendar";
 import { db } from "~/utils/db.server";
 import { prepareCourseData } from "~/utils/calendar.server";
+
 export const loader = async () => {
   const student = await db.student.findUnique({
     where: {
@@ -38,5 +39,6 @@ export const loader = async () => {
 
 export default function Calendar() {
   const { enrollments } = useLoaderData<any>();
+  console.log({ enrollments });
   return <WeekCalendar preparedData={enrollments} />;
 }
