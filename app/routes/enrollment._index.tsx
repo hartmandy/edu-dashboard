@@ -39,6 +39,6 @@ export const loader = async () => {
 
 export default function Calendar() {
   const { enrollments } = useLoaderData<any>();
-  console.log({ enrollments });
+
   return <WeekCalendar preparedData={enrollments} />;
 }

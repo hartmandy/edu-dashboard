@@ -1,9 +1,10 @@
+import { Cross1Icon } from "@radix-ui/react-icons";
+import { useFetcher, Form } from "@remix-run/react";
 type PreparedData = {
   [key: string]: TimeBlockData[];
 };
 
-type TimeBlockData = { startTime: string; courseTitle: string };
-
+type TimeBlockData = { startTime: string; courseTitle: string; id: number };
 const START_TIME = "8:00AM";
 const END_TIME = "10:00PM";
 const TIME_INCREMENT = 30;
@@ -23,6 +24,7 @@ const DayColumn = ({
   day: string;
   timeBlocks: TimeBlockData[];
 }) => {
+  const deleteEnrollmentFetcher = useFetcher();
   let currentMinutes = convertToMinutes(START_TIME);
   const endMinutes = convertToMinutes(END_TIME);
 
@@ -34,6 +36,20 @@ const DayColumn = ({
     );
     const blockContent = foundCourse ? foundCourse.courseTitle : null;
     const time = foundCourse ? foundCourse.startTime : null;
+    const action = foundCourse ? (
+      <deleteEnrollmentFetcher.Form
+        method="POST"
+        action={`/delete-enrollment/${foundCourse.id}`}
+      >
+        {deleteEnrollmentFetcher.state === "idle" ? (
+          <button>
+            <Cross1Icon height={20} width={20} />
+          </button>
+        ) : (
+          ".."
+        )}
+      </deleteEnrollmentFetcher.Form>
+    ) : null;
 
     const borderClass =
       currentMinutes % 60 === 0 ? "border-solid" : "border-dashed";
@@ -44,9 +60,12 @@ const DayColumn = ({
         key={currentMinutes}
         className={`relative border-zinc-800 border-b ${borderClass} h-[80px] p-2 ${color}`}
       >
-        <div>
-          <p>{blockContent}</p>
-          <p>{time}</p>
+        <div className="flex items-start justify-between gap-1">
+          <div>
+            <p className="text-md">{blockContent}</p>
+            <p>{time}</p>
+          </div>
+          {action}
         </div>
       </div>
     );
@@ -59,20 +78,13 @@ const DayColumn = ({
       <div className="sticky top-0 py-6 text-center border-b border-r border-zinc-800 bg-zinc-900 z-10">
         {day}
       </div>
-      <div className="grid grid-rows-14">{timeSlots}</div>
+      <div>{timeSlots}</div>
     </div>
   );
 };
 
 const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
-  const daysOfWeek = [
-    " ",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-  ];
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
   const renderTimeColumn = () => {
     let currentMinutes = convertToMinutes(START_TIME);
@@ -115,7 +127,7 @@ const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
     <div className="flex w-screen">
       {renderTimeColumn()}
       <div className="grid grid-cols-5 w-full">
-        {daysOfWeek.slice(1).map((day) => (
+        {daysOfWeek.map((day) => (
           <DayColumn
             key={day}
             day={day}

@@ -6,14 +6,16 @@ type Section = {
 type Course = {
   courseTitle: string;
   sections: Section[];
+  id: number;
 };
 
 type Enrollment = {
+  id: number;
   course: Course;
 };
 
 type PreparedData = {
-  [key: string]: { startTime: string; courseTitle: string }[];
+  [key: string]: { startTime: string; courseTitle: string; id: number }[];
 };
 
 const convertToMinutes = (time: string): number => {
@@ -34,8 +36,11 @@ export const prepareCourseData = (enrollments: Enrollment[]): PreparedData => {
   });
 
   // Loop through each enrollment to populate the preparedData
-  enrollments.forEach(({ course }) => {
+  enrollments.forEach(({ id, course }) => {
     const { sections } = course;
+
+    // Add the enrollment id to the course object
+    course.id = id;
 
     sections.forEach((section) => {
       const { startTime, days } = section;
@@ -45,6 +50,7 @@ export const prepareCourseData = (enrollments: Enrollment[]): PreparedData => {
           preparedData[dayOfWeek].push({
             startTime,
             courseTitle: course.courseTitle,
+            id: id,
           });
         }
       });
