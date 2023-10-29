@@ -1,5 +1,6 @@
 type Section = {
   startTime: string;
+  endTime: string;
   days: { dayOfWeek: string }[];
 };
 
@@ -15,7 +16,12 @@ type Enrollment = {
 };
 
 type PreparedData = {
-  [key: string]: { startTime: string; courseTitle: string; id: number }[];
+  [key: string]: {
+    startTime: string;
+    endTime: string;
+    courseTitle: string;
+    id: number;
+  }[];
 };
 
 const convertToMinutes = (time: string): number => {
@@ -43,12 +49,13 @@ export const prepareCourseData = (enrollments: Enrollment[]): PreparedData => {
     course.id = id;
 
     sections.forEach((section) => {
-      const { startTime, days } = section;
+      const { startTime, days, endTime } = section;
 
       days.forEach(({ dayOfWeek }) => {
         if (daysOfWeek.includes(dayOfWeek.toUpperCase())) {
           preparedData[dayOfWeek].push({
             startTime,
+            endTime,
             courseTitle: course.courseTitle,
             id: id,
           });

@@ -4,7 +4,12 @@ type PreparedData = {
   [key: string]: TimeBlockData[];
 };
 
-type TimeBlockData = { startTime: string; courseTitle: string; id: number };
+type TimeBlockData = {
+  startTime: string;
+  endTime: string;
+  courseTitle: string;
+  id: number;
+};
 const START_TIME = "8:00AM";
 const END_TIME = "10:00PM";
 const TIME_INCREMENT = 30;
@@ -27,19 +32,40 @@ const DayColumn = ({
   const deleteEnrollmentFetcher = useFetcher();
   let currentMinutes = convertToMinutes(START_TIME);
   const endMinutes = convertToMinutes(END_TIME);
-
   const timeSlots = [];
 
   while (currentMinutes <= endMinutes) {
     const foundCourse = timeBlocks.find(
-      (block) => convertToMinutes(block.startTime) === currentMinutes
+      (block) =>
+        convertToMinutes(block.startTime) <= currentMinutes &&
+        convertToMinutes(block.endTime) > currentMinutes
     );
-    const blockContent = foundCourse ? foundCourse.courseTitle : null;
-    const time = foundCourse ? foundCourse.startTime : null;
-    const action = foundCourse ? (
+
+    const isFirstBlock = foundCourse
+      ? convertToMinutes(foundCourse.startTime) === currentMinutes
+      : false;
+
+    const duration = foundCourse
+      ? convertToMinutes(foundCourse.endTime) -
+        convertToMinutes(foundCourse.startTime)
+      : 0;
+
+    const rowNum =
+      Math.floor(
+        (currentMinutes - convertToMinutes(START_TIME)) / TIME_INCREMENT
+      ) + 1;
+    const rowSpan = Math.floor(duration / TIME_INCREMENT);
+
+    const gridRow = isFirstBlock
+      ? `grid-row: ${rowNum} / span ${rowSpan};`
+      : "";
+
+    const contentStyle = isFirstBlock ? "absolute inset-0" : "";
+
+    const action = isFirstBlock ? (
       <deleteEnrollmentFetcher.Form
         method="POST"
-        action={`/delete-enrollment/${foundCourse.id}`}
+        action={`/delete-enrollment/${foundCourse?.id}`}
       >
         {deleteEnrollmentFetcher.state === "idle" ? (
           <button>
@@ -51,21 +77,32 @@ const DayColumn = ({
       </deleteEnrollmentFetcher.Form>
     ) : null;
 
-    const borderClass =
-      currentMinutes % 60 === 0 ? "border-solid" : "border-dashed";
+    const borderClass = Boolean(foundCourse)
+      ? ""
+      : currentMinutes % 60 === 0
+      ? "border-zinc-800 border-b border-solid"
+      : "border-zinc-800 border-b border-dashed";
 
-    const color = Boolean(blockContent) ? "bg-indigo-300 text-black" : "";
+    const color = Boolean(foundCourse) ? "bg-indigo-300 text-black" : "";
+
     timeSlots.push(
       <div
         key={currentMinutes}
-        className={`relative border-zinc-800 border-b ${borderClass} h-[80px] p-2 ${color}`}
+        style={{ gridRow }}
+        className={`relative ${borderClass} p-2 ${color} h-[80px]`}
       >
-        <div className="flex items-start justify-between gap-1">
+        <div
+          className={`p-2 z-10 flex items-start justify-between gap-1 ${contentStyle}`}
+        >
           <div>
-            <p className="text-md">{blockContent}</p>
-            <p>{time}</p>
+            {isFirstBlock && (
+              <p className="text-lg">{foundCourse?.courseTitle}</p>
+            )}
+            {isFirstBlock && (
+              <p>{`${foundCourse?.startTime} - ${foundCourse?.endTime}`}</p>
+            )}
           </div>
-          {action}
+          {isFirstBlock && action}
         </div>
       </div>
     );
@@ -74,8 +111,8 @@ const DayColumn = ({
   }
 
   return (
-    <div className="border-r-zinc-800 border-r">
-      <div className="sticky top-0 py-6 text-center border-b border-r border-zinc-800 bg-zinc-900 z-10">
+    <div className="border-r-zinc-800 border-r grid grid-rows-auto">
+      <div className="sticky top-0 py-6 text-center border-b border-r border-zinc-800 bg-zinc-900 z-20">
         {day}
       </div>
       <div>{timeSlots}</div>
@@ -116,8 +153,8 @@ const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
     }
 
     return (
-      <div className="sticky left-0 z-20 bg-zinc-900 border-r border-zinc-800">
-        <div className="py-6 text-center h-[73px] border-b border-zinc-800"></div>
+      <div className="sticky left-0 z-20 border-r border-zinc-800 bg-zinc-900">
+        <div className="py-6 text-center h-[73px] border-b border-zinc-800 sticky top-0 bg-zinc-900 z-20"></div>
         <div className="grid grid-rows-14">{timeSlots}</div>
       </div>
     );
