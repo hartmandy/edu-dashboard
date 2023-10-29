@@ -88,10 +88,13 @@ const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
         minutes === 0 ? "00" : minutes
       }${period}`;
 
+      const borderClass =
+        currentMinutes % 60 === 0 ? "border-solid" : "border-dashed";
+
       timeSlots.push(
         <div
           key={currentMinutes}
-          className="relative h-[80px] p-2 border-b border-zinc-800"
+          className={`relative h-[80px] p-2 border-b border-zinc-800 ${borderClass}`}
         >
           {formattedTime}
         </div>
