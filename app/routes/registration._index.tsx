@@ -7,7 +7,7 @@ import { json } from "@remix-run/node";
 
 export const loader = async () => {
   const student = await getStudentWithDraftEnrollments();
-
+  console.log(JSON.stringify(student));
   if (!student?.enrollments) {
     return { enrollments: null };
   }

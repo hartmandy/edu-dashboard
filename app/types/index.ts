@@ -19,6 +19,7 @@ type CourseSection = PrismaCourseSection & {
   teacher?: Teacher;
   days?: CourseSectionDay[];
   enrollments?: Enrollment[];
+  course?: Course;
 };
 
 type CourseSectionDay = PrismaCourseSectionDay;
@@ -34,16 +35,22 @@ type Enrollment = PrismaEnrollment & {
   section?: CourseSection;
 };
 
-type PreparedData = {
-  [key: string]: TimeBlockData[];
-};
-
 type TimeBlockData = {
   startTime: string;
   endTime: string;
   courseTitle: string;
   id: number;
   status: "DRAFT" | "ENROLLED";
+};
+
+type PreparedData = {
+  [key: string]: {
+    startTime: string;
+    endTime: string;
+    courseTitle: string;
+    id: number;
+    status: "DRAFT" | "ENROLLED";
+  }[];
 };
 
 export type {

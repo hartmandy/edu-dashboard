@@ -1,6 +1,7 @@
 import { db } from "~/utils/db.server";
 
 export async function getStudentWithDraftEnrollments() {
+  // TODO: get enrollments not student.
   const student = await db.student.findUnique({
     where: {
       id: 1,
@@ -11,13 +12,10 @@ export async function getStudentWithDraftEnrollments() {
           status: "DRAFT",
         },
         include: {
-          course: {
+          section: {
             include: {
-              sections: {
-                include: {
-                  days: true,
-                },
-              },
+              days: true,
+              course: true,
             },
           },
         },
@@ -43,13 +41,10 @@ export async function getStudentWithEnrollments() {
           status: "ENROLLED",
         },
         include: {
-          course: {
+          section: {
             include: {
-              sections: {
-                include: {
-                  days: true,
-                },
-              },
+              days: true,
+              course: true,
             },
           },
         },

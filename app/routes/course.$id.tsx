@@ -7,6 +7,7 @@ import {
 import { Link, useLoaderData } from "@remix-run/react";
 import { db } from "~/utils/db.server";
 import CourseSectionCards from "~/components/CourseSectionCards";
+import { validateRegistration } from "~/data/enrollment.server";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { id } = params;
@@ -41,17 +42,26 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
+  const { message, isValid } = await validateRegistration(
+    Number(data.courseId),
+    Number(data.studentId),
+    String(data.startTime),
+    String(data.endTime),
+    String(data.daysOfWeek)
+  );
 
-  // Create enrollment
-  await db.enrollment.create({
-    data: {
-      courseId: Number(data.courseId),
-      sectionId: Number(data.sectionId),
-      studentId: Number(data.studentId),
-    },
-  });
+  if (isValid) {
+    await db.enrollment.create({
+      data: {
+        courseId: Number(data.courseId),
+        sectionId: Number(data.sectionId),
+        studentId: Number(data.studentId),
+      },
+    });
+    return redirect("/registration");
+  }
 
-  return redirect("/registration");
+  return { message };
 }
 
 export default function CoursePage() {
@@ -66,7 +76,7 @@ export default function CoursePage() {
           <p className="text-xl">{course?.description}</p>
         </div>
       </div>
-      <ul className="w-2/5 border-l border-zinc-800">
+      <ul className="w-2/5 border-l border-zinc-700">
         {course?.sections.map((section) => (
           <CourseSectionCards
             key={section.id}

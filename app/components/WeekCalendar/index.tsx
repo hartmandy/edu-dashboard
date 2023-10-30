@@ -4,6 +4,7 @@ import { PreparedData } from "~/types";
 
 const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  console.log({ preparedData });
   return (
     <div className="flex w-screen border-b border-b-zinc-800">
       <TimeColumn />

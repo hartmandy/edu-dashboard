@@ -4,7 +4,7 @@ export default function CourseSearchForm() {
   const [params] = useSearchParams();
 
   return (
-    <Form method="get" className="w-2/3 border-r border-zinc-800">
+    <Form method="get" className="w-2/3 border-r border-zinc-700">
       <div className="relative">
         <MagnifyingGlassIcon
           height={20}

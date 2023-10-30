@@ -1,30 +1,4 @@
-type Section = {
-  startTime: string;
-  endTime: string;
-  days: { dayOfWeek: string }[];
-};
-
-type Course = {
-  courseTitle: string;
-  sections: Section[];
-  id: number;
-};
-
-type Enrollment = {
-  id: number;
-  course: Course;
-  status: "DRAFT" | "ENROLLED";
-};
-
-type PreparedData = {
-  [key: string]: {
-    startTime: string;
-    endTime: string;
-    courseTitle: string;
-    id: number;
-    status: "DRAFT" | "ENROLLED";
-  }[];
-};
+import { Enrollment, PreparedData, TimeBlockData } from "~/types"; // Assuming this is the correct import path
 
 const convertToMinutes = (time: string): number => {
   const [_, hours, minutes, period] = time.match(/(\d+):(\d+)(AM|PM)/)!;
@@ -35,44 +9,47 @@ const convertToMinutes = (time: string): number => {
 };
 
 export const prepareCourseData = (enrollments: Enrollment[]): PreparedData => {
+  console.log("Received enrollments: ", enrollments);
+
   const daysOfWeek = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
   const preparedData: PreparedData = {};
 
-  // Initialize empty arrays for each day of the week
   daysOfWeek.forEach((day) => {
     preparedData[day] = [];
   });
 
-  // Loop through each enrollment to populate the preparedData
-  enrollments.forEach(({ id, course, status }) => {
-    const { sections } = course;
+  enrollments.forEach((enrollment) => {
+    const { id, status, section } = enrollment;
 
-    // Add the enrollment id to the course object
-    course.id = id;
+    if (section && section.days) {
+      const { startTime, endTime, days, course } = section;
 
-    sections.forEach((section) => {
-      const { startTime, days, endTime } = section;
+      if (course) {
+        const courseTitle = course.courseTitle;
 
-      days.forEach(({ dayOfWeek }) => {
-        if (daysOfWeek.includes(dayOfWeek.toUpperCase())) {
-          preparedData[dayOfWeek].push({
-            startTime,
-            endTime,
-            courseTitle: course.courseTitle,
-            id: id,
-            status,
-          });
-        }
-      });
-    });
+        days.forEach(({ dayOfWeek }) => {
+          if (daysOfWeek.includes(dayOfWeek.toUpperCase())) {
+            const timeBlock: TimeBlockData = {
+              startTime,
+              endTime,
+              courseTitle,
+              id,
+              status,
+            };
+            preparedData[dayOfWeek].push(timeBlock);
+          }
+        });
+      }
+    }
   });
 
-  // Sort by start time for each day
   daysOfWeek.forEach((day) => {
     preparedData[day].sort((a, b) => {
       return convertToMinutes(a.startTime) - convertToMinutes(b.startTime);
     });
   });
+
+  console.log("Prepared data: ", preparedData);
 
   return preparedData;
 };

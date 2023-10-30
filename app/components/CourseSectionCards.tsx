@@ -1,5 +1,5 @@
 import { PersonIcon } from "@radix-ui/react-icons";
-import { Form } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import { Course, CourseSection } from "~/types";
 
 type Props = {
@@ -16,8 +16,11 @@ const dayAbbreviations = {
 };
 
 export default function CourseSectionCards({ section, course }: Props) {
+  const enrollFetcher = useFetcher();
+  const days = section?.days?.map((d) => d.dayOfWeek).toString();
+  console.log(days);
   return (
-    <li key={section.id} className="border-b border-zinc-800 p-4">
+    <li key={section.id} className="border-b border-zinc-700 p-4">
       <h2 className="text-2xl mb-2">{section?.teacher?.username}</h2>
       <div className="flex justify-between items-center">
         <div>
@@ -42,14 +45,17 @@ export default function CourseSectionCards({ section, course }: Props) {
               <PersonIcon height={16} width={16} />
             </i>
           </div>
-          <Form method="post">
+          <enrollFetcher.Form method="post">
             <input type="hidden" name="courseId" value={course.id} />
             <input type="hidden" name="sectionId" value={section.id} />
             <input type="hidden" name="studentId" value={1} />
+            <input type="hidden" name="startTime" value={section.startTime} />
+            <input type="hidden" name="endTime" value={section.endTime} />
+            <input type="hidden" name="daysOfWeek" value={days} />
             <button className="text-white bg-indigo-400 px-4 py-2 rounded">
               Enroll
             </button>
-          </Form>
+          </enrollFetcher.Form>
         </div>
       </div>
     </li>

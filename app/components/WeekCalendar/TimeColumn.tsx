@@ -16,12 +16,14 @@ export default function TimeColumn() {
     }${period}`;
 
     const borderClass =
-      currentMinutes % 60 === 0 ? "border-solid" : "border-dashed";
+      currentMinutes % 60 === 0
+        ? "border-zinc-800 border-dashed"
+        : " border-zinc-800 border-solid";
 
     timeSlots.push(
       <div
         key={currentMinutes}
-        className={`relative h-[80px] p-2 border-b border-zinc-800 ${borderClass}`}
+        className={`relative h-[80px] p-2 border-b ${borderClass}`}
       >
         {formattedTime}
       </div>
@@ -31,9 +33,9 @@ export default function TimeColumn() {
   }
 
   return (
-    <div className="sticky left-0 z-30 border-r border-zinc-800 bg-zinc-900">
-      <div className="py-6 text-center h-[73px] border-b border-zinc-800 bg-zinc-900 sticky z-30 top-0"></div>
-      <div className="grid grid-rows-14">{timeSlots}</div>
+    <div className="sticky left-0 z-30 border-r border-zinc-700 bg-zinc-900">
+      <div className="py-6 text-center h-[73px] border-b border-zinc-700 bg-zinc-900 sticky z-30 top-0"></div>
+      <div className="grid grid-rows-14 text-zinc-500">{timeSlots}</div>
     </div>
   );
 }

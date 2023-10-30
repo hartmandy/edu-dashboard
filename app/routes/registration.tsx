@@ -31,19 +31,19 @@ export default function Registration() {
   const { courses } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex w-screen h-[calc(100vh-76px)] overflow-hidden">
-      <div className="w-1/3 border-r  border-zinc-800">
-        <div className="flex border-b border-zinc-800">
+    <div className="flex h-[calc(100vh-76px)] overflow-hidden">
+      <div className="w-1/3 border-r  border-zinc-700">
+        <div className="flex border-b border-zinc-700">
           <CourseSearchForm />
           <RegisterButton />
         </div>
         <div className="h-[calc(100%-73px)] overflow-y-auto relative">
           {courses.map((course: any) => (
-            <CourseCard course={course} />
+            <CourseCard key={course.id} course={course} />
           ))}
         </div>
       </div>
-      <div className="w-2/3 bg-zinc-900 overflow-y-auto no-scrollbar">
+      <div className="w-2/3 overflow-y-auto no-scrollbar">
         <Outlet />
       </div>
     </div>

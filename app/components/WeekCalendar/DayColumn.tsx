@@ -2,14 +2,7 @@ import { TIME_INCREMENT, START_TIME, END_TIME } from "./constants";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { useFetcher } from "@remix-run/react";
 import { convertToMinutes } from "./helpers";
-
-type TimeBlockData = {
-  startTime: string;
-  endTime: string;
-  courseTitle: string;
-  id: number;
-  status: "DRAFT" | "ENROLLED";
-};
+import { TimeBlockData } from "~/types";
 
 export const DayColumn = ({
   day,
@@ -23,6 +16,7 @@ export const DayColumn = ({
   const endMinutes = convertToMinutes(END_TIME);
   const timeSlots = [];
 
+  // generate time slots
   while (currentMinutes <= endMinutes) {
     const foundCourse = timeBlocks.find(
       (block) =>
@@ -30,27 +24,30 @@ export const DayColumn = ({
         convertToMinutes(block.endTime) > currentMinutes
     );
 
+    // course block rendering
     const isFirstBlock = foundCourse
       ? convertToMinutes(foundCourse.startTime) === currentMinutes
       : false;
-
     const duration = foundCourse
       ? convertToMinutes(foundCourse.endTime) -
         convertToMinutes(foundCourse.startTime)
       : 0;
-
     const rowNum =
       Math.floor(
         (currentMinutes - convertToMinutes(START_TIME)) / TIME_INCREMENT
       ) + 1;
     const rowSpan = Math.floor(duration / TIME_INCREMENT);
 
-    const gridRow = isFirstBlock
-      ? `grid-row: ${rowNum} / span ${rowSpan};`
-      : "";
-
+    // Styles and Actions
     const contentStyle = isFirstBlock ? "absolute inset-0" : "";
+    const borderClass = Boolean(foundCourse)
+      ? ""
+      : currentMinutes % 60 === 0
+      ? "border-zinc-800 border-b border-dashed"
+      : "border-zinc-800 border-b border-solid";
+    const color = Boolean(foundCourse) ? "bg-indigo-300 text-black" : "";
 
+    // Delete action
     const action =
       isFirstBlock && foundCourse?.status === "DRAFT" ? (
         <deleteEnrollmentFetcher.Form
@@ -67,20 +64,12 @@ export const DayColumn = ({
         </deleteEnrollmentFetcher.Form>
       ) : null;
 
-    const borderClass = Boolean(foundCourse)
-      ? ""
-      : currentMinutes % 60 === 0
-      ? "border-zinc-800 border-b border-solid"
-      : "border-zinc-800 border-b border-dashed";
-
-    const color = Boolean(foundCourse) ? "bg-indigo-300 text-black" : "";
-
+    // Push the time slot component
     timeSlots.push(
       <div
         key={currentMinutes}
-        style={{ gridRow }}
         className={`relative ${borderClass} p-2 ${color} h-[80px] ${
-          isFirstBlock ? "border-t border-zinc-800" : ""
+          isFirstBlock ? "border-t border-zinc-700" : ""
         }`}
       >
         <div
@@ -103,11 +92,11 @@ export const DayColumn = ({
   }
 
   return (
-    <div className="border-r-zinc-800 border-r grid grid-rows-auto">
-      <div className="sticky top-0 py-6 text-center border-b border-zinc-800 bg-zinc-900 z-20">
+    <div className="grid grid-rows-auto">
+      <div className="sticky top-0 py-6 text-center border-b border-zinc-700 bg-zinc-900 z-20 border-r">
         {day}
       </div>
-      <div>{timeSlots}</div>
+      <div className="border-zinc-800 border-r">{timeSlots}</div>
     </div>
   );
 };
