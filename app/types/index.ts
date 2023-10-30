@@ -43,6 +43,7 @@ type TimeBlockData = {
   endTime: string;
   courseTitle: string;
   id: number;
+  status: "DRAFT" | "ENROLLED";
 };
 
 export type {

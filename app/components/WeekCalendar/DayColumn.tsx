@@ -8,7 +8,9 @@ type TimeBlockData = {
   endTime: string;
   courseTitle: string;
   id: number;
+  status: "DRAFT" | "ENROLLED";
 };
+
 export const DayColumn = ({
   day,
   timeBlocks,
@@ -49,20 +51,21 @@ export const DayColumn = ({
 
     const contentStyle = isFirstBlock ? "absolute inset-0" : "";
 
-    const action = isFirstBlock ? (
-      <deleteEnrollmentFetcher.Form
-        method="POST"
-        action={`/delete-enrollment/${foundCourse?.id}`}
-      >
-        {deleteEnrollmentFetcher.state === "idle" ? (
-          <button>
-            <Cross1Icon height={20} width={20} />
-          </button>
-        ) : (
-          ".."
-        )}
-      </deleteEnrollmentFetcher.Form>
-    ) : null;
+    const action =
+      isFirstBlock && foundCourse?.status === "DRAFT" ? (
+        <deleteEnrollmentFetcher.Form
+          method="POST"
+          action={`/delete-enrollment/${foundCourse?.id}`}
+        >
+          {deleteEnrollmentFetcher.state === "idle" ? (
+            <button>
+              <Cross1Icon height={20} width={20} />
+            </button>
+          ) : (
+            ".."
+          )}
+        </deleteEnrollmentFetcher.Form>
+      ) : null;
 
     const borderClass = Boolean(foundCourse)
       ? ""
@@ -76,7 +79,9 @@ export const DayColumn = ({
       <div
         key={currentMinutes}
         style={{ gridRow }}
-        className={`relative ${borderClass} p-2 ${color} h-[80px]`}
+        className={`relative ${borderClass} p-2 ${color} h-[80px] ${
+          isFirstBlock ? "border-t border-zinc-800" : ""
+        }`}
       >
         <div
           className={`p-2 z-10 flex items-start justify-between gap-1 ${contentStyle}`}
@@ -99,7 +104,7 @@ export const DayColumn = ({
 
   return (
     <div className="border-r-zinc-800 border-r grid grid-rows-auto">
-      <div className="sticky top-0 py-6 text-center border-b border-r border-zinc-800 bg-zinc-900 z-20">
+      <div className="sticky top-0 py-6 text-center border-b border-zinc-800 bg-zinc-900 z-20">
         {day}
       </div>
       <div>{timeSlots}</div>

@@ -32,7 +32,7 @@ export default function TimeColumn() {
 
   return (
     <div className="sticky left-0 z-30 border-r border-zinc-800 bg-zinc-900">
-      <div className="py-6 text-center h-[73px] border-b border-zinc-800 bg-zinc-900"></div>
+      <div className="py-6 text-center h-[73px] border-b border-zinc-800 bg-zinc-900 sticky z-30 top-0"></div>
       <div className="grid grid-rows-14">{timeSlots}</div>
     </div>
   );

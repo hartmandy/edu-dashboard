@@ -51,7 +51,7 @@ export async function action({ request }: ActionFunctionArgs) {
     },
   });
 
-  return redirect("/enrollment");
+  return redirect("/registration");
 }
 
 export default function CoursePage() {
@@ -61,7 +61,7 @@ export default function CoursePage() {
     <div className="flex h-full">
       <div className="w-3/5 px-10">
         <div className="max-w-xl grid gap-6 mt-10">
-          <Link to={"/enrollment"}>Back</Link>
+          <Link to={"/registration"}>Back</Link>
           <h1 className="text-7xl">{course?.courseTitle}</h1>
           <p className="text-xl">{course?.description}</p>
         </div>

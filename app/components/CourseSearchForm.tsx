@@ -4,10 +4,11 @@ export default function CourseSearchForm() {
   const [params] = useSearchParams();
 
   return (
-    <Form method="get">
+    <Form method="get" className="w-2/3 border-r border-zinc-800">
       <div className="relative">
         <MagnifyingGlassIcon
           height={20}
+          width={20}
           style={{
             position: "absolute",
             top: "50%",
@@ -17,9 +18,9 @@ export default function CourseSearchForm() {
         />
         <input
           id="search"
-          placeholder="Search through this semester's courses."
+          placeholder="Search courses."
           name="search"
-          className="w-full p-6 border-b border-zinc-800 bg-zinc-900 focus:outline-none pl-10"
+          className="w-full p-6 bg-zinc-900 focus:outline-none pl-10"
           type="text"
           defaultValue={params.get("search") || ""}
         />

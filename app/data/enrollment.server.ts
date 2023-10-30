@@ -21,3 +21,16 @@ export const createEnrollment = async ({
     throw new Error("Failed to create enrollment");
   }
 };
+
+export const register = async () => {
+  await db.enrollment.updateMany({
+    where: {
+      studentId: {
+        equals: 1,
+      },
+    },
+    data: {
+      status: "ENROLLED",
+    },
+  });
+};

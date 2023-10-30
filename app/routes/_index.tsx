@@ -1,6 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import { db } from "../utils/db.server";
-import { useLoaderData } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,14 +9,11 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  // const { courseSections } = useLoaderData<any>();
-  // return (
-  //   <h1 className="m-10">
-  //     {courseSections.map((courseSection: any) => (
-  //       <p>{courseSection.id}</p>
-  //     ))}
-  //   </h1>
-  // );
-
-  return "landing";
+  return (
+    <div className="h-[calc(100vh-76px)] grid place-content-center">
+      <Link to="/registration" className="bg-indigo-400 px-6 py-4">
+        Continue in as Amanda
+      </Link>
+    </div>
+  );
 }

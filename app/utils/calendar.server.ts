@@ -13,6 +13,7 @@ type Course = {
 type Enrollment = {
   id: number;
   course: Course;
+  status: "DRAFT" | "ENROLLED";
 };
 
 type PreparedData = {
@@ -21,6 +22,7 @@ type PreparedData = {
     endTime: string;
     courseTitle: string;
     id: number;
+    status: "DRAFT" | "ENROLLED";
   }[];
 };
 
@@ -42,7 +44,7 @@ export const prepareCourseData = (enrollments: Enrollment[]): PreparedData => {
   });
 
   // Loop through each enrollment to populate the preparedData
-  enrollments.forEach(({ id, course }) => {
+  enrollments.forEach(({ id, course, status }) => {
     const { sections } = course;
 
     // Add the enrollment id to the course object
@@ -58,6 +60,7 @@ export const prepareCourseData = (enrollments: Enrollment[]): PreparedData => {
             endTime,
             courseTitle: course.courseTitle,
             id: id,
+            status,
           });
         }
       });

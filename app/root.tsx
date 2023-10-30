@@ -1,7 +1,7 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction } from "@remix-run/node";
 import stylesheet from "~/tailwind.css";
-
+import TopBar from "./components/Topbar";
 import {
   Links,
   LiveReload,
@@ -25,7 +25,8 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="bg-zinc-900 text-white w-screen h-screen">
+      <body className="bg-zinc-900 text-white h-screen">
+        <TopBar />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

@@ -1,12 +1,12 @@
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import WeekCalendar from "~/components/WeekCalendar";
-import { prepareCourseData } from "~/utils/calendar.server";
-import { getStudent } from "~/data/student.server";
+import { getStudentWithEnrollments } from "~/data/student.server";
 import { PreparedData } from "~/types";
-import { json } from "@remix-run/node";
+import { prepareCourseData } from "~/utils/calendar.server";
 
 export const loader = async () => {
-  const student = await getStudent();
+  const student = await getStudentWithEnrollments();
 
   if (!student?.enrollments) {
     return { enrollments: null };
@@ -20,10 +20,14 @@ export const loader = async () => {
   return json({ preparedData });
 };
 
-export default function Calendar() {
+export default function Dashboard() {
   const { preparedData } = useLoaderData<typeof loader>() as {
     preparedData: PreparedData;
   };
 
-  return <WeekCalendar preparedData={preparedData} />;
+  return (
+    <div className="overflow-auto no-scrollbar w-screen h-[calc(100vh-76px)]">
+      <WeekCalendar preparedData={preparedData} />
+    </div>
+  );
 }

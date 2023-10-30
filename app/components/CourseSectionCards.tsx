@@ -46,7 +46,7 @@ export default function CourseSectionCards({ section, course }: Props) {
             <input type="hidden" name="courseId" value={course.id} />
             <input type="hidden" name="sectionId" value={section.id} />
             <input type="hidden" name="studentId" value={1} />
-            <button className="text-white bg-indigo-500 px-4 py-2 rounded">
+            <button className="text-white bg-indigo-400 px-4 py-2 rounded">
               Enroll
             </button>
           </Form>
