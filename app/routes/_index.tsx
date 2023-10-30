@@ -4,16 +4,10 @@ import { useLoaderData } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Edu Dashboard" },
+    { name: "description", content: "Education Dashboard" },
   ];
 };
-
-// export const loader = async () => {
-//   const courseSections = await db.courseSection.findMany({});
-
-//   return { courseSections };
-// };
 
 export default function Index() {
   // const { courseSections } = useLoaderData<any>();
