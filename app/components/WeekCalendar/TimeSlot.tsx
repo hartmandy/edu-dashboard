@@ -34,7 +34,7 @@ const TimeSlot = ({ currentMinutes, foundCourse }: TimeSlotProps) => {
       >
         <div>
           {isFirstBlock && (
-            <p className="text-lg">{foundCourse?.courseTitle}</p>
+            <p className="text-lg font-semibold">{foundCourse?.courseTitle}</p>
           )}
           {isFirstBlock && (
             <p>{`${foundCourse?.startTime} - ${foundCourse?.endTime}`}</p>

@@ -32,12 +32,20 @@ export const DayColumn: React.FC<DayColumnProps> = ({ day, timeBlocks }) => {
     currentMinutes += TIME_INCREMENT;
   }
 
+  const isFriday = day === "Friday";
+
   return (
     <div className="grid grid-rows-auto">
-      <div className="sticky top-0 py-6 text-center border-b border-zinc-700 bg-zinc-900 z-20 border-r">
+      <div
+        className={`sticky top-0 py-6 text-center border-b ${
+          isFriday ? "" : "border-r"
+        } border-zinc-700 bg-zinc-900 z-20`}
+      >
         {day}
       </div>
-      <div className="border-zinc-800 border-r">{timeSlots}</div>
+      <div className={`${isFriday ? "" : "border-r border-zinc-800"}`}>
+        {timeSlots}
+      </div>
     </div>
   );
 };

@@ -8,7 +8,7 @@ const WeekCalendar = ({ scheduleData }: { scheduleData: ScheduleData }) => {
   return (
     <div className="flex w-screen border-b border-b-zinc-800">
       <TimeColumn />
-      <div className="grid grid-cols-5 w-full">
+      <div className="grid grid-cols-5 w-full border-r border-zinc-700">
         {daysOfWeek.map((day) => (
           <DayColumn
             key={day}
