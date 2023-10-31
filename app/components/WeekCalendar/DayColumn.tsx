@@ -1,17 +1,14 @@
 import { TIME_INCREMENT, START_TIME, END_TIME } from "./constants";
-import { Cross1Icon } from "@radix-ui/react-icons";
-import { useFetcher } from "@remix-run/react";
 import { convertToMinutes } from "./helpers";
 import { TimeBlockData } from "~/types";
+import TimeSlot from "./TimeSlot";
 
-export const DayColumn = ({
-  day,
-  timeBlocks,
-}: {
+interface DayColumnProps {
   day: string;
   timeBlocks: TimeBlockData[];
-}) => {
-  const deleteEnrollmentFetcher = useFetcher();
+}
+
+export const DayColumn: React.FC<DayColumnProps> = ({ day, timeBlocks }) => {
   let currentMinutes = convertToMinutes(START_TIME);
   const endMinutes = convertToMinutes(END_TIME);
   const timeSlots = [];
@@ -24,68 +21,12 @@ export const DayColumn = ({
         convertToMinutes(block.endTime) > currentMinutes
     );
 
-    // course block rendering
-    const isFirstBlock = foundCourse
-      ? convertToMinutes(foundCourse.startTime) === currentMinutes
-      : false;
-    const duration = foundCourse
-      ? convertToMinutes(foundCourse.endTime) -
-        convertToMinutes(foundCourse.startTime)
-      : 0;
-    const rowNum =
-      Math.floor(
-        (currentMinutes - convertToMinutes(START_TIME)) / TIME_INCREMENT
-      ) + 1;
-    const rowSpan = Math.floor(duration / TIME_INCREMENT);
-
-    // Styles and Actions
-    const contentStyle = isFirstBlock ? "absolute inset-0" : "";
-    const borderClass = Boolean(foundCourse)
-      ? ""
-      : currentMinutes % 60 === 0
-      ? "border-zinc-800 border-b border-dashed"
-      : "border-zinc-800 border-b border-solid";
-    const color = Boolean(foundCourse) ? "bg-indigo-300 text-black" : "";
-
-    // Delete action
-    const action =
-      isFirstBlock && foundCourse?.status === "DRAFT" ? (
-        <deleteEnrollmentFetcher.Form
-          method="POST"
-          action={`/delete-enrollment/${foundCourse?.id}`}
-        >
-          {deleteEnrollmentFetcher.state === "idle" ? (
-            <button>
-              <Cross1Icon height={20} width={20} />
-            </button>
-          ) : (
-            ".."
-          )}
-        </deleteEnrollmentFetcher.Form>
-      ) : null;
-
-    // Push the time slot component
     timeSlots.push(
-      <div
+      <TimeSlot
         key={currentMinutes}
-        className={`relative ${borderClass} p-2 ${color} h-[80px] ${
-          isFirstBlock ? "border-t border-zinc-700" : ""
-        }`}
-      >
-        <div
-          className={`p-2 z-10 flex items-start justify-between gap-1 ${contentStyle}`}
-        >
-          <div>
-            {isFirstBlock && (
-              <p className="text-lg">{foundCourse?.courseTitle}</p>
-            )}
-            {isFirstBlock && (
-              <p>{`${foundCourse?.startTime} - ${foundCourse?.endTime}`}</p>
-            )}
-          </div>
-          {isFirstBlock && action}
-        </div>
-      </div>
+        currentMinutes={currentMinutes}
+        foundCourse={foundCourse}
+      />
     );
 
     currentMinutes += TIME_INCREMENT;
