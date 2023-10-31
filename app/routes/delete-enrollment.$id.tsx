@@ -1,17 +1,10 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { db } from "~/utils/db.server";
+import { deleteEnrollment } from "~/data/enrollment.server";
 
 export const action = async ({ params }: ActionFunctionArgs) => {
   const { id } = params;
-  try {
-    await db.enrollment.delete({
-      where: {
-        id: Number(id),
-      },
-    });
-  } catch {
-    return 500;
-  }
+
+  await deleteEnrollment(id);
 
   return 200;
 };

@@ -1,6 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, Form } from "@remix-run/react";
-import { db } from "~/utils/db.server";
 import {
   commitSession,
   getSession,
@@ -8,6 +7,7 @@ import {
   setSuccessMessage,
 } from "~/utils/message.server";
 import { json } from "@remix-run/node";
+import { deleteAllEnrollment } from "~/data/enrollment.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,13 +20,7 @@ export const action = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request.headers.get("cookie"));
 
   try {
-    await db.enrollment.deleteMany({
-      where: {
-        studentId: {
-          equals: 1,
-        },
-      },
-    });
+    await deleteAllEnrollment();
     setSuccessMessage(session, "Successfully reset demo.");
     return json(
       { ok: true },
@@ -57,9 +51,9 @@ export default function Index() {
         </Link>
         <Form
           method="POST"
-          className="border-2 dark:border-blue-400 dark:text-blue-400 border-blue-600 text-blue-600 py-4 w-[250px] text-center font-semibold"
+          className="border-2 dark:border-blue-400 dark:text-blue-400 border-blue-600 text-blue-600 w-[250px] text-center font-semibold"
         >
-          <button>Reset demo</button>
+          <button className="w-full h-full py-4">Reset demo</button>
         </Form>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { db } from "~/utils/db.server";
+import { prepareScheduleData } from "~/utils/calendar.server";
 
-export async function getStudentWithDraftEnrollments() {
-  // TODO: get enrollments not student.
+export async function getStudentWithEnrollments(status?: "DRAFT" | "ENROLLED") {
   const student = await db.student.findUnique({
     where: {
       id: 1,
@@ -9,7 +9,7 @@ export async function getStudentWithDraftEnrollments() {
     include: {
       enrollments: {
         where: {
-          status: "DRAFT",
+          status: status || "DRAFT",
         },
         include: {
           section: {
@@ -30,31 +30,15 @@ export async function getStudentWithDraftEnrollments() {
   return student;
 }
 
-export async function getStudentWithEnrollments() {
-  const student = await db.student.findUnique({
-    where: {
-      id: 1,
-    },
-    include: {
-      enrollments: {
-        where: {
-          status: "ENROLLED",
-        },
-        include: {
-          section: {
-            include: {
-              days: true,
-              course: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  if (!student) {
-    throw new Error("User not found");
+export async function getStudenSchedule(status?: "DRAFT" | "ENROLLED") {
+  const student = await getStudentWithEnrollments(status);
+  if (!student?.enrollments) {
+    return { enrollments: null };
   }
 
-  return student;
+  const scheduleData = prepareScheduleData(student?.enrollments || []);
+  if (!scheduleData) {
+    throw new Error("Failed to get prepared calendar data");
+  }
+  return scheduleData;
 }

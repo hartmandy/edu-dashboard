@@ -1,27 +1,5 @@
 import { db } from "~/utils/db.server";
 
-export const createEnrollment = async ({
-  courseId,
-  sectionId,
-  studentId,
-}: {
-  courseId: string;
-  sectionId: string;
-  studentId: string;
-}) => {
-  try {
-    await db.enrollment.create({
-      data: {
-        courseId: Number(courseId),
-        sectionId: Number(sectionId),
-        studentId: Number(studentId),
-      },
-    });
-  } catch (err) {
-    throw new Error("Failed to create enrollment");
-  }
-};
-
 export const register = async () => {
   await db.enrollment.updateMany({
     where: {
@@ -156,3 +134,42 @@ const timeToMinutes = (timeString: string) => {
     throw new Error("Invalid time format");
   }
 };
+
+export async function deleteEnrollment(id?: string) {
+  if (!id) {
+    throw new Error("No id provided.");
+  }
+  try {
+    await db.enrollment.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+  } catch {
+    return 500;
+  }
+}
+
+export async function deleteAllEnrollment() {
+  await db.enrollment.deleteMany({
+    where: {
+      studentId: {
+        equals: 1,
+      },
+    },
+  });
+}
+
+export async function createEnrollment(
+  courseId: number,
+  sectionId: number,
+  studentId: number
+) {
+  await db.enrollment.create({
+    data: {
+      courseId,
+      sectionId,
+      studentId,
+    },
+  });
+}

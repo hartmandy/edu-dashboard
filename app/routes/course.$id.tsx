@@ -7,40 +7,21 @@ import {
 import { Link, useLoaderData } from "@remix-run/react";
 import { db } from "~/utils/db.server";
 import CourseSectionCards from "~/components/CourseSectionCards";
-import { validateRegistration } from "~/data/enrollment.server";
+import {
+  validateRegistration,
+  createEnrollment,
+} from "~/data/enrollment.server";
 import {
   commitSession,
   getSession,
   setErrorMessage,
-  setSuccessMessage,
 } from "~/utils/message.server";
+import { getCourseById } from "~/data/course.server";
+import { Course } from "~/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { id } = params;
-  if (!id || isNaN(Number(id))) {
-    return json({ status: 500, course: null });
-  }
-
-  // Fetch course data
-  const course = await db.course.findUnique({
-    where: {
-      id: Number(id),
-    },
-    include: {
-      subject: true,
-      sections: {
-        include: {
-          teacher: true,
-          days: true,
-          enrollments: true,
-        },
-      },
-    },
-  });
-
-  if (!course) {
-    throw new Error("No course found!");
-  }
+  const course = await getCourseById(id);
 
   return { course };
 };
@@ -49,12 +30,20 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession(request.headers.get("cookie"));
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
+
+  const courseId = Number(data.courseId);
+  const studentId = Number(data.studentId);
+  const startTime = String(data.startTime);
+  const endTime = String(data.endTime);
+  const daysOfWeek = String(data.daysOfWeek);
+  const sectionId = Number(data.sectionId);
+
   const { message, isValid } = await validateRegistration(
-    Number(data.courseId),
-    Number(data.studentId),
-    String(data.startTime),
-    String(data.endTime),
-    String(data.daysOfWeek)
+    courseId,
+    studentId,
+    startTime,
+    endTime,
+    daysOfWeek
   );
 
   if (!isValid) {
@@ -66,18 +55,13 @@ export async function action({ request }: ActionFunctionArgs) {
       }
     );
   }
-  await db.enrollment.create({
-    data: {
-      courseId: Number(data.courseId),
-      sectionId: Number(data.sectionId),
-      studentId: Number(data.studentId),
-    },
-  });
+
+  await createEnrollment(courseId, sectionId, studentId);
   return redirect("/registration");
 }
 
 export default function CoursePage() {
-  const { course } = useLoaderData<typeof loader>();
+  const { course } = useLoaderData<{ course: Course }>();
 
   return (
     <div className="flex h-full">
@@ -89,7 +73,7 @@ export default function CoursePage() {
         </div>
       </div>
       <ul className="w-2/5 border-l dark:border-zinc-700 border-zinc-400">
-        {course?.sections.map((section) => (
+        {course?.sections?.map((section) => (
           <CourseSectionCards
             key={section.id}
             course={course}
