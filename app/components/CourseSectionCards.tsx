@@ -19,14 +19,17 @@ export default function CourseSectionCards({ section, course }: Props) {
   const enrollFetcher = useFetcher();
   const days = section?.days?.map((d) => d.dayOfWeek).toString();
   return (
-    <li key={section.id} className="border-b border-zinc-700 p-4">
+    <li
+      key={section.id}
+      className="border-b dark:border-zinc-700 border-zinc-400 p-4"
+    >
       <h2 className="text-2xl mb-2">{section?.teacher?.username}</h2>
       <div className="flex justify-between items-center">
         <div>
           {section?.days?.map((day) => (
             <span
               key={day.id}
-              className="bg-indigo-300 text-black p-1 rounded mr-2 font-semibold"
+              className="dark:bg-blue-300 dark:text-black bg-blue-500 text-white py-1 px-3 rounded mr-2 font-semibold"
             >
               {dayAbbreviations[day.dayOfWeek]}
             </span>
@@ -51,7 +54,7 @@ export default function CourseSectionCards({ section, course }: Props) {
             <input type="hidden" name="startTime" value={section.startTime} />
             <input type="hidden" name="endTime" value={section.endTime} />
             <input type="hidden" name="daysOfWeek" value={days} />
-            <button className="text-white bg-indigo-400 px-4 py-2 rounded">
+            <button className="text-white dark:bg-blue-400 dark:text-black bg-blue-600 px-4 py-2 rounded font-semibold">
               Enroll
             </button>
           </enrollFetcher.Form>

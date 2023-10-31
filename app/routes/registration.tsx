@@ -9,6 +9,7 @@ import { searchCourses } from "~/data/course.server";
 import CourseCard from "~/components/CourseCard";
 import RegisterButton from "~/components/RegisterButton";
 import { register } from "~/data/enrollment.server";
+import { CSSProperties } from "react";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -32,12 +33,19 @@ export default function Registration() {
 
   return (
     <div className="flex h-[calc(100vh-76px)] overflow-hidden">
-      <div className="w-1/3 border-r  border-zinc-700">
-        <div className="flex border-b border-zinc-700">
+      <div className="w-1/3 border-l dark:border-zinc-700 border-zinc-400">
+        <div className="flex border-b dark:border-zinc-700 border-zinc-400">
           <CourseSearchForm />
           <RegisterButton />
         </div>
-        <div className="h-[calc(100%-73px)] overflow-y-auto relative">
+        <div
+          className="h-[calc(100%-73px)] overflow-y-auto relative pb-10"
+          style={
+            {
+              "scrollbar-gutter": "stable",
+            } as CSSProperties
+          }
+        >
           {courses.map((course: any) => (
             <CourseCard key={course.id} course={course} />
           ))}

@@ -7,19 +7,32 @@
   width: 12px;
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  position: absolute;
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background-color: #3f3f46;
+  }
+
+  .scrollbar {
+    scrollbar-color: #18181b;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: #18181b;
+  }
 }
 
-.scrollbar {
-  scrollbar-color: #18181b;
-  position: absolute;
-}
+@media (prefers-color-scheme: light) {
+  ::-webkit-scrollbar-thumb {
+    background-color: #d6d6dd;
+  }
 
-::-webkit-scrollbar-corner {
-  background: #18181b;
+  .scrollbar {
+    scrollbar-color: #eeeef4;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: #eeeef4;
+  }
 }
 
 @layer utilities {

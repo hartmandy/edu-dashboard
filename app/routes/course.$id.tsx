@@ -8,6 +8,12 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { db } from "~/utils/db.server";
 import CourseSectionCards from "~/components/CourseSectionCards";
 import { validateRegistration } from "~/data/enrollment.server";
+import {
+  commitSession,
+  getSession,
+  setErrorMessage,
+  setSuccessMessage,
+} from "~/utils/message.server";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { id } = params;
@@ -40,6 +46,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 export async function action({ request }: ActionFunctionArgs) {
+  const session = await getSession(request.headers.get("cookie"));
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const { message, isValid } = await validateRegistration(
@@ -50,18 +57,23 @@ export async function action({ request }: ActionFunctionArgs) {
     String(data.daysOfWeek)
   );
 
-  if (isValid) {
-    await db.enrollment.create({
-      data: {
-        courseId: Number(data.courseId),
-        sectionId: Number(data.sectionId),
-        studentId: Number(data.studentId),
-      },
-    });
-    return redirect("/registration");
+  if (!isValid) {
+    setErrorMessage(session, message);
+    return json(
+      { ok: false },
+      {
+        headers: { "Set-Cookie": await commitSession(session) },
+      }
+    );
   }
-
-  return { message };
+  await db.enrollment.create({
+    data: {
+      courseId: Number(data.courseId),
+      sectionId: Number(data.sectionId),
+      studentId: Number(data.studentId),
+    },
+  });
+  return redirect("/registration");
 }
 
 export default function CoursePage() {
@@ -76,7 +88,7 @@ export default function CoursePage() {
           <p className="text-xl">{course?.description}</p>
         </div>
       </div>
-      <ul className="w-2/5 border-l border-zinc-700">
+      <ul className="w-2/5 border-l dark:border-zinc-700 border-zinc-400">
         {course?.sections.map((section) => (
           <CourseSectionCards
             key={section.id}

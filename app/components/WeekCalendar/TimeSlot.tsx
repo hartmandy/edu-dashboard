@@ -17,16 +17,18 @@ const TimeSlot = ({ currentMinutes, foundCourse }: TimeSlotProps) => {
   const borderClass = Boolean(foundCourse)
     ? ""
     : currentMinutes % 60 === 0
-    ? "border-zinc-800 border-b border-dashed"
-    : "border-zinc-800 border-b border-solid";
-  const color = Boolean(foundCourse) ? "bg-indigo-300 text-black" : "";
+    ? "dark:border-zinc-800 border-zinc-300 border-b border-dashed"
+    : "dark:border-zinc-800 border-zinc-300 border-b border-solid";
+  const color = Boolean(foundCourse)
+    ? "dark:bg-blue-300 dark:text-black bg-blue-500 text-white"
+    : "";
   const contentStyle = isFirstBlock ? "absolute inset-0" : "";
 
   return (
     <div
       key={currentMinutes}
-      className={`relative ${borderClass} p-2 ${color} h-[80px] ${
-        isFirstBlock ? "border-t border-zinc-700" : ""
+      className={`relative last:border-b-0 ${borderClass} p-2 ${color} h-[80px] ${
+        isFirstBlock ? "border-t dark:border-zinc-700 border-zinc-400" : ""
       }`}
     >
       <div

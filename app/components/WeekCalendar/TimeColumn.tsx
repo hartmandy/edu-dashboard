@@ -17,8 +17,8 @@ export default function TimeColumn() {
 
     const borderClass =
       currentMinutes % 60 === 0
-        ? "border-zinc-800 border-dashed"
-        : " border-zinc-800 border-solid";
+        ? "dark:border-zinc-800 border-zinc-300 border-dashed"
+        : " dark:border-zinc-800 border-zinc-300 border-solid";
 
     timeSlots.push(
       <div
@@ -33,9 +33,11 @@ export default function TimeColumn() {
   }
 
   return (
-    <div className="sticky left-0 z-30 border-r border-zinc-700 bg-zinc-900">
-      <div className="py-6 text-center h-[73px] border-b border-zinc-700 bg-zinc-900 sticky z-30 top-0"></div>
-      <div className="grid grid-rows-14 text-zinc-700">{timeSlots}</div>
+    <div className="sticky left-0 z-30 border-x dark:dark:border-zinc-700 border-zinc-400 border-zinc-400 dark:bg-zinc-900 bg-zinc-50">
+      <div className="py-6 text-center h-[73px] border-b dark:dark:border-zinc-700 border-zinc-400 border-zinc-400 dark:bg-zinc-900 bg-zinc-50 sticky z-30 top-0"></div>
+      <div className="grid grid-rows-14 dark:text-zinc-700 text-zinc-500">
+        {timeSlots}
+      </div>
     </div>
   );
 }
