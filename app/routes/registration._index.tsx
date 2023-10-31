@@ -2,10 +2,10 @@ import { useLoaderData } from "@remix-run/react";
 import WeekCalendar from "~/components/WeekCalendar";
 import { ScheduleData } from "~/types";
 import { json } from "@remix-run/node";
-import { getStudenSchedule } from "~/data/student.server";
+import { getStudentSchedule } from "~/data/student.server";
 
 export const loader = async () => {
-  const scheduleData = await getStudenSchedule();
+  const scheduleData = await getStudentSchedule();
 
   return json({ scheduleData });
 };

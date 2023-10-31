@@ -4,7 +4,6 @@ import { ScheduleData } from "~/types";
 
 const WeekCalendar = ({ scheduleData }: { scheduleData: ScheduleData }) => {
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  console.log({ scheduleData });
   return (
     <div className="flex w-screen border-b border-b-zinc-800">
       <TimeColumn />

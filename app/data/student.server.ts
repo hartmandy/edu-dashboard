@@ -30,7 +30,7 @@ export async function getStudentWithEnrollments(status?: "DRAFT" | "ENROLLED") {
   return student;
 }
 
-export async function getStudenSchedule(status?: "DRAFT" | "ENROLLED") {
+export async function getStudentSchedule(status?: "DRAFT" | "ENROLLED") {
   const student = await getStudentWithEnrollments(status);
   if (!student?.enrollments) {
     return { enrollments: null };
