@@ -1,10 +1,10 @@
 import { DayColumn } from "./DayColumn";
 import TimeColumn from "./TimeColumn";
-import { PreparedData } from "~/types";
+import { ScheduleData } from "~/types";
 
-const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
+const WeekCalendar = ({ scheduleData }: { scheduleData: ScheduleData }) => {
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  console.log({ preparedData });
+  console.log({ scheduleData });
   return (
     <div className="flex w-screen border-b border-b-zinc-800">
       <TimeColumn />
@@ -13,7 +13,7 @@ const WeekCalendar = ({ preparedData }: { preparedData: PreparedData }) => {
           <DayColumn
             key={day}
             day={day}
-            timeBlocks={preparedData[day.toUpperCase()] || []}
+            timeBlocks={scheduleData[day.toUpperCase()] || []}
           />
         ))}
       </div>

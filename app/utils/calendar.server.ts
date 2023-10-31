@@ -1,4 +1,4 @@
-import { Enrollment, PreparedData, TimeBlockData } from "~/types"; // Assuming this is the correct import path
+import { Enrollment, ScheduleData, TimeBlockData } from "~/types"; // Assuming this is the correct import path
 
 const convertToMinutes = (time: string): number => {
   const [_, hours, minutes, period] = time.match(/(\d+):(\d+)(AM|PM)/)!;
@@ -8,48 +8,36 @@ const convertToMinutes = (time: string): number => {
   return totalMinutes;
 };
 
-export const prepareCourseData = (enrollments: Enrollment[]): PreparedData => {
-  console.log("Received enrollments: ", enrollments);
+// This function prepares data for a single day
+const prepareDayData = (
+  enrollments: Enrollment[],
+  day: string
+): TimeBlockData[] => {
+  return enrollments
+    .filter((enrollment) =>
+      enrollment.section?.days?.some((d) => d.dayOfWeek.toUpperCase() === day)
+    )
+    .map((enrollment) => ({
+      startTime: enrollment.section?.startTime!,
+      endTime: enrollment.section?.endTime!,
+      courseTitle: enrollment.section?.course?.courseTitle!,
+      id: enrollment.id,
+      status: enrollment.status,
+    }))
+    .sort(
+      (a, b) => convertToMinutes(a.startTime) - convertToMinutes(b.startTime)
+    );
+};
 
+export const prepareScheduleData = (
+  enrollments: Enrollment[]
+): ScheduleData => {
   const daysOfWeek = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
-  const preparedData: PreparedData = {};
+  const preparedData: ScheduleData = {};
 
   daysOfWeek.forEach((day) => {
-    preparedData[day] = [];
+    preparedData[day] = prepareDayData(enrollments, day);
   });
-
-  enrollments.forEach((enrollment) => {
-    const { id, status, section } = enrollment;
-
-    if (section && section.days) {
-      const { startTime, endTime, days, course } = section;
-
-      if (course) {
-        const courseTitle = course.courseTitle;
-
-        days.forEach(({ dayOfWeek }) => {
-          if (daysOfWeek.includes(dayOfWeek.toUpperCase())) {
-            const timeBlock: TimeBlockData = {
-              startTime,
-              endTime,
-              courseTitle,
-              id,
-              status,
-            };
-            preparedData[dayOfWeek].push(timeBlock);
-          }
-        });
-      }
-    }
-  });
-
-  daysOfWeek.forEach((day) => {
-    preparedData[day].sort((a, b) => {
-      return convertToMinutes(a.startTime) - convertToMinutes(b.startTime);
-    });
-  });
-
-  console.log("Prepared data: ", preparedData);
 
   return preparedData;
 };

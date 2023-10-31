@@ -43,7 +43,7 @@ type TimeBlockData = {
   status: "DRAFT" | "ENROLLED";
 };
 
-type PreparedData = {
+type ScheduleData = {
   [key: string]: {
     startTime: string;
     endTime: string;
@@ -62,5 +62,5 @@ export type {
   CourseSectionDay,
   Teacher,
   TimeBlockData,
-  PreparedData,
+  ScheduleData,
 };

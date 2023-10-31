@@ -18,7 +18,6 @@ const dayAbbreviations = {
 export default function CourseSectionCards({ section, course }: Props) {
   const enrollFetcher = useFetcher();
   const days = section?.days?.map((d) => d.dayOfWeek).toString();
-  console.log(days);
   return (
     <li key={section.id} className="border-b border-zinc-700 p-4">
       <h2 className="text-2xl mb-2">{section?.teacher?.username}</h2>
