@@ -17,8 +17,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     dangerouslyAllowBrowser: true,
   });
   const formData = await request.formData();
+  const chatThread = JSON.parse(formData.get("chatThread") as string);
   const content = (await formData.get("content")) as string;
-  if (!content) {
+  if (!content || !chatThread) {
     return {
       content: null,
       error: "No content.",
@@ -31,6 +32,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         role: "system",
         content: getSystemPrompt(enrollments, allCourses),
       },
+      ...chatThread,
       { role: "user", content: content },
     ],
     model: "ft:gpt-3.5-turbo-1106:personal::8JweN5TR",
@@ -43,7 +45,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 type Message = {
-  role: "user" | "ai";
+  role: "user" | "assistant" | "system";
   content: string;
 };
 
@@ -53,7 +55,7 @@ export const Chatbot = () => {
   const formRef = useRef<any>();
   const [response, setResponse] = useState<Message[]>([
     {
-      role: "ai",
+      role: "assistant",
       content:
         "Hey, Mandy - Welcome to CourseQueue Ai! How can I help you today?",
     },
@@ -67,7 +69,7 @@ export const Chatbot = () => {
       console.log(fetcher);
       setResponse((prev) => [
         ...prev,
-        { role: "ai", content: fetcher.data?.content! },
+        { role: "assistant", content: fetcher.data?.content! },
       ]);
     }
     if (fetcher.state === "submitting") {
@@ -106,11 +108,11 @@ export const Chatbot = () => {
               <div
                 key={index}
                 className={`${
-                  message.role === "ai" ? "text-left" : "text-right"
+                  message.role === "assistant" ? "text-left" : "text-right"
                 }`}
               >
                 <div className="border-b border-zinc-300 p-6 whitespace-pre-wrap overflow-x-hidden break-words">
-                  {message.role === "ai" ? (
+                  {message.role === "assistant" ? (
                     <strong className="mr-2 text-lg">Assistant</strong>
                   ) : null}
                   {message.role === "user" ? (
@@ -133,6 +135,11 @@ export const Chatbot = () => {
               rows={3}
               className="text-zinc-950 bg-zinc-200 p-4 border border-zinc-300 w-full text-lg"
               placeholder="Chat about course times and your own schedule."
+            />
+            <input
+              type="hidden"
+              name="chatThread"
+              value={JSON.stringify(response)}
             />
             <button className="bg-blue-500 h-14 px-6 hover:bg-blue-600 font-semibold text-white">
               Send
@@ -159,7 +166,7 @@ function getSystemPrompt(enrollments: string, allCourses: string) {
     The are tasked with this:
 
     1. Help the user with information about the courses offered. 
-    2. Let the user know if they have any conflicts with the course they are talking about. 
+    2. Most importantly always consider the time conflict between the course the user is asking about and their current schedule, you must always check. 
     3. You will address the user as Mandy.
     4. Respond with Markdown.
 
