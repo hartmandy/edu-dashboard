@@ -173,3 +173,36 @@ export async function createEnrollment(
     },
   });
 }
+
+export const getAllCourses = async () => {
+  const courses = await db.course.findMany({
+    include: {
+      subject: true,
+      sections: {
+        include: {
+          teacher: true,
+          days: {},
+        },
+      },
+    },
+  });
+
+  return formatCoursesForGPT(courses);
+};
+
+function formatCoursesForGPT(courses: any[]) {
+  return courses
+    .map((course) => {
+      const sectionsInfo = course.sections
+        .map((section: any) => {
+          const days = section.days.map((day: any) => day.dayOfWeek).join(", ");
+          return `Section taught by ${section.teacher.username} on ${days} from ${section.startTime} to ${section.endTime}`;
+        })
+        .join("; ");
+
+      return `Course Title: ${course.courseTitle} (Code: ${course.courseCode}, Subject: ${course.subject.name})
+Description: ${course.description}
+Sections: ${sectionsInfo}`;
+    })
+    .join("\n\n");
+}

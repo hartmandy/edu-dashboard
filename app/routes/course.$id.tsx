@@ -5,7 +5,6 @@ import {
   redirect,
 } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { db } from "~/utils/db.server";
 import CourseSectionCards from "~/components/CourseSectionCards";
 import {
   validateRegistration,

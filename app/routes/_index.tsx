@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Link, Form } from "@remix-run/react";
+import { Link, Form, useLoaderData } from "@remix-run/react";
 import {
   commitSession,
   getSession,
@@ -18,7 +18,6 @@ export const meta: MetaFunction = () => {
 
 export const action = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request.headers.get("cookie"));
-
   try {
     await deleteAllEnrollment();
     setSuccessMessage(session, "Successfully reset demo.");

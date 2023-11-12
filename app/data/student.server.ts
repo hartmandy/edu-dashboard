@@ -42,3 +42,37 @@ export async function getStudentSchedule(status?: "DRAFT" | "ENROLLED") {
   }
   return scheduleData;
 }
+
+export async function getStudentEnrollments() {
+  const enrollments = await db.enrollment.findMany({
+    where: {
+      studentId: 1,
+      status: "DRAFT",
+    },
+    include: {
+      section: {
+        include: {
+          course: true,
+          days: true,
+        },
+      },
+    },
+  });
+
+  return formatCourseDataForGPT(enrollments);
+}
+
+function formatCourseDataForGPT(data: any[]) {
+  return data
+    .map((datum: any) => {
+      const { course, days, startTime, endTime } = datum.section;
+      const daysOfWeek = days.map((day: any) => day.dayOfWeek).join(", ");
+
+      return `Course Title: ${course.courseTitle}
+Description: ${course.description}
+Course Code: ${course.courseCode}
+Scheduled Days: ${daysOfWeek}
+Time: ${startTime} - ${endTime}`;
+    })
+    .join("\n\n");
+}
