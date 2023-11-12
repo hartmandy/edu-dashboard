@@ -11,7 +11,7 @@ export default {
         },
       },
       animation: {
-        breathe: "breathe 2s ease-in-out infinite",
+        breathe: "breathe 1.5s ease-in-out infinite",
       },
     },
   },

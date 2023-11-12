@@ -40,7 +40,7 @@ export const action = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Index() {
   return (
-    <div className="h-[calc(100vh-76px)] grid place-content-center border-x border-b dark:border-zinc-700 border-zinc-400">
+    <div className="h-[calc(100vh-76px)] grid place-content-center border-x border-b dark:border-zinc-700 border-zinc-400 relative">
       <div className="flex gap-4">
         <Link
           to="/registration"

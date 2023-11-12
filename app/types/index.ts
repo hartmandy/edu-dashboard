@@ -53,6 +53,11 @@ type ScheduleData = {
   }[];
 };
 
+type Message = {
+  role: "user" | "assistant" | "system";
+  content: string;
+};
+
 export type {
   Course,
   Subject,
@@ -63,4 +68,5 @@ export type {
   Teacher,
   TimeBlockData,
   ScheduleData,
+  Message,
 };

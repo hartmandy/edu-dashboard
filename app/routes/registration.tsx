@@ -10,7 +10,6 @@ import CourseCard from "~/components/CourseCard";
 import RegisterButton from "~/components/RegisterButton";
 import { register } from "~/data/enrollment.server";
 import { CSSProperties } from "react";
-import { Chatbot } from "./chatbot";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -55,7 +54,6 @@ export default function Registration() {
       <div className="w-2/3 overflow-y-auto no-scrollbar">
         <Outlet />
       </div>
-      <Chatbot />
     </div>
   );
 }

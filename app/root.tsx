@@ -15,6 +15,7 @@ import { Toaster, toast } from "react-hot-toast";
 import type { ToastMessage } from "~/utils/message.server";
 import { commitSession, getSession } from "~/utils/message.server";
 import React from "react";
+import { Chatbot } from "./routes/chatbot";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -73,6 +74,7 @@ export default function App() {
         <TopBar />
         <Outlet />
         <Toaster />
+        <Chatbot />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

@@ -1,12 +1,12 @@
 import OpenAI from "openai";
-import { useFetcher } from "@remix-run/react";
 import { ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { getAllCourses } from "~/data/enrollment.server";
 import { getStudentEnrollments } from "~/data/student.server";
 import Markdown from "~/components/Markdown";
 import Loader from "~/components/Loader";
+import useChatbot from "~/utils/chatbot.hook";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const enrollments = await getStudentEnrollments();
@@ -44,42 +44,37 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   };
 };
 
-type Message = {
-  role: "user" | "assistant" | "system";
-  content: string;
-};
-
 export const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const formRef = useRef<any>();
-  const [response, setResponse] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hey, Mandy - Welcome to CourseQueue Ai! How can I help you today?",
-    },
-  ]);
-  const fetcher = useFetcher<typeof action>();
+  const { response, formRef, fetcher } = useChatbot();
   const fetcherIsLoading =
     fetcher.state === "loading" || fetcher.state === "submitting";
 
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.content) {
-      console.log(fetcher);
-      setResponse((prev) => [
-        ...prev,
-        { role: "assistant", content: fetcher.data?.content! },
-      ]);
-    }
-    if (fetcher.state === "submitting") {
-      console.log(formRef.current.content.value);
-      const userContent = formRef.current.content.value;
-      setResponse((prev) => [...prev, { role: "user", content: userContent }]);
+  const messagesRef = useRef<any>(null);
+  const containerRef = useRef<any>(null);
 
-      formRef.current.reset();
+  useEffect(() => {
+    if (messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
-  }, [fetcher]);
+  }, [response]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target) &&
+        event.target !== containerRef.current
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
@@ -87,6 +82,7 @@ export const Chatbot = () => {
 
   return (
     <div
+      ref={containerRef}
       className={`absolute bottom-0 right-0 z-20 transition-all ease-in-out duration-200 shadow-xl ${
         isOpen
           ? "max-w-xl h-[704px] bg-zinc-100 text-zinc-950 border"
@@ -103,7 +99,7 @@ export const Chatbot = () => {
       </div>
       {isOpen && (
         <>
-          <div className="overflow-auto h-[400px]">
+          <div className="overflow-auto h-[400px]" ref={messagesRef}>
             {response.map((message: any, index: number) => (
               <div
                 key={index}
