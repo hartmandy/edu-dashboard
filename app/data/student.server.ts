@@ -43,6 +43,7 @@ export async function getStudentSchedule(status?: "DRAFT" | "ENROLLED") {
   return scheduleData;
 }
 
+// Get student enrollments and their section, course, and day for student number 1.
 export async function getStudentEnrollments() {
   const enrollments = await db.enrollment.findMany({
     where: {

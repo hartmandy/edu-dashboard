@@ -174,6 +174,7 @@ export async function createEnrollment(
   });
 }
 
+// Get all courses on the platform, their sections, teacher, and days.
 export const getAllCourses = async () => {
   const courses = await db.course.findMany({
     include: {

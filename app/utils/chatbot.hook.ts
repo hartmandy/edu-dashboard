@@ -28,8 +28,8 @@ export default function useChatbot() {
     // If the user submitted a new question for the ai
     if (fetcher.state === "submitting") {
       // add the question to the conversation ui.
-      const userContent = formRef.current.content.value;
-      setMessages((prev) => [...prev, { role: "user", content: userContent }]);
+      const userInput = formRef.current.userInput.value;
+      setMessages((prev) => [...prev, { role: "user", content: userInput }]);
       // reset the form.
       formRef.current.reset();
     }

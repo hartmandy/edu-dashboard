@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import { ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 import { useEffect, useRef, useState } from "react";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { getAllCourses } from "~/data/enrollment.server";
@@ -11,9 +10,9 @@ import Controls from "~/components/Controls";
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const chatThread = JSON.parse(formData.get("chatThread") as string);
-  const content = (await formData.get("content")) as string;
+  const userInput = (await formData.get("userInput")) as string;
 
-  if (!content || !chatThread) {
+  if (!userInput || !chatThread) {
     return {
       content: null,
       error: "No content.",
@@ -30,20 +29,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const messages = [
     {
       role: "system",
-      content: getSystemPrompt(enrollments, allCourses),
+      content: getSystemPrompt(enrollments, allCourses), // give gpt-3.5 the context of the students enrollments and all courses on the platform.
     },
     ...chatThread,
-    { role: "user", content: content },
+    { role: "user", content: userInput },
   ];
 
-  //Make a request to the openai chat completions endpoint.
+  //Make a request to the openai chat completions endpoint and get the message content.
   const result = await openai.chat.completions.create({
     messages: messages,
     model: "ft:gpt-3.5-turbo-1106:personal::8JweN5TR",
   });
 
+  const [choice] = result.choices;
+
   return {
-    content: result.choices[0].message.content,
+    content: choice.message.content,
     error: null,
   };
 };
@@ -100,7 +101,7 @@ export const Chatbot = () => {
             className="p-6 grid gap-4"
           >
             <textarea
-              name="content"
+              name="userInput"
               rows={3}
               className="text-zinc-950 bg-zinc-200 p-4 border border-zinc-300 w-full text-lg"
               placeholder="Ask me about course details, schedule building, potential conflicts, or suggestions for courses to take."
@@ -122,11 +123,11 @@ export const Chatbot = () => {
 
 function getSystemPrompt(enrollments: string, allCourses: string) {
   const data = ` 
-    Students current schedule JSON: 
+    Students current schedule: 
     
     ${enrollments}
     
-    All the courses we offered JSON:
+    All the courses we offered:
 
     ${allCourses}
     `;
