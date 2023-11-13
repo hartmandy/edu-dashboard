@@ -63,18 +63,32 @@ export default function App() {
   }, [toastMessage]);
 
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className="dark:bg-zinc-900 dark:text-white bg-zinc-50 text-black"
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body className="dark:bg-zinc-900 dark:text-white bg-zinc-50 text-black h-screen">
-        <TopBar />
-        <Outlet />
-        <Toaster />
-        <Chatbot />
+      <body className="h-screen">
+        <div className="lg:block hidden">
+          <TopBar />
+          <Outlet />
+          <Toaster />
+          <Chatbot />
+        </div>
+        <div className="block lg:hidden text-center p-4">
+          <h2 className="font-bold text-xl mb-2">Mobile View Not Optimized</h2>
+          <p className="text-gray-700">
+            We're sorry for the inconvenience, but our application is currently
+            not optimized for mobile view. For the best user experience, please
+            access our application from a desktop or a larger screen device. We
+            appreciate your understanding.
+          </p>
+        </div>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
