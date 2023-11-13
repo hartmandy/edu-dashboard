@@ -74,11 +74,14 @@ export default function App() {
         <Links />
       </head>
       <body className="h-screen">
-        <div className="lg:block hidden">
+        <div className="lg:block hidden h-full">
           <TopBar />
           <Outlet />
           <Toaster />
           <Chatbot />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
         </div>
         <div className="block lg:hidden text-center p-4">
           <h2 className="font-bold text-xl mb-2">Mobile View Not Optimized</h2>
@@ -89,9 +92,6 @@ export default function App() {
             appreciate your understanding.
           </p>
         </div>
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
