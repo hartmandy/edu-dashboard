@@ -5,29 +5,35 @@ import { Message } from "~/types";
 
 export default function useChatbot() {
   const formRef = useRef<any>();
-  const [response, setResponse] = useState<Message[]>([
+  const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
       content:
-        "Hey, Mandy - Welcome to CourseQueue Ai! How can I help you today?",
+        "Hi Amanda - Welcome to CourseQueue Ai! How can I help you today?",
     },
   ]);
   const fetcher = useFetcher<any>();
-
+  const isLoading =
+    fetcher.state === "loading" || fetcher.state === "submitting";
   useEffect(() => {
+    // If the fetcher is idle again, and we have data from the fetcher (action/chatbot post)
     if (fetcher.state === "idle" && fetcher.data?.content) {
-      setResponse((prev) => [
+      // update the conversation ui with the new content.
+      setMessages((prev) => [
         ...prev,
         { role: "assistant", content: fetcher.data?.content! },
       ]);
     }
-    if (fetcher.state === "submitting") {
-      const userContent = formRef.current.content.value;
-      setResponse((prev) => [...prev, { role: "user", content: userContent }]);
 
+    // If the user submitted a new question for the ai
+    if (fetcher.state === "submitting") {
+      // add the question to the conversation ui.
+      const userContent = formRef.current.content.value;
+      setMessages((prev) => [...prev, { role: "user", content: userContent }]);
+      // reset the form.
       formRef.current.reset();
     }
   }, [fetcher]);
 
-  return { response, formRef, fetcher };
+  return { messages, formRef, fetcher, isLoading };
 }

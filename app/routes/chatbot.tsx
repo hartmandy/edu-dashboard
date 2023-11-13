@@ -4,21 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { getAllCourses } from "~/data/enrollment.server";
 import { getStudentEnrollments } from "~/data/student.server";
-import Markdown from "~/components/Markdown";
-import Loader from "~/components/Loader";
 import useChatbot from "~/utils/chatbot.hook";
+import Conversation from "~/components/Conversation";
+import Controls from "~/components/Controls";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const enrollments = await getStudentEnrollments();
-  const allCourses = await getAllCourses();
-
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true,
-  });
   const formData = await request.formData();
   const chatThread = JSON.parse(formData.get("chatThread") as string);
   const content = (await formData.get("content")) as string;
+
   if (!content || !chatThread) {
     return {
       content: null,
@@ -26,15 +20,25 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     };
   }
 
+  const enrollments = await getStudentEnrollments();
+  const allCourses = await getAllCourses();
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+
+  // prepare the system message, the previous chat thread, and the new question.
+  const messages = [
+    {
+      role: "system",
+      content: getSystemPrompt(enrollments, allCourses),
+    },
+    ...chatThread,
+    { role: "user", content: content },
+  ];
+
+  //Make a request to the openai chat completions endpoint.
   const result = await openai.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        content: getSystemPrompt(enrollments, allCourses),
-      },
-      ...chatThread,
-      { role: "user", content: content },
-    ],
+    messages: messages,
     model: "ft:gpt-3.5-turbo-1106:personal::8JweN5TR",
   });
 
@@ -46,20 +50,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { response, formRef, fetcher } = useChatbot();
-  const fetcherIsLoading =
-    fetcher.state === "loading" || fetcher.state === "submitting";
-
-  const messagesRef = useRef<any>(null);
+  const { messages, formRef, fetcher, isLoading } = useChatbot();
   const containerRef = useRef<any>(null);
 
   useEffect(() => {
-    if (messagesRef.current) {
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-    }
-  }, [response]);
-
-  useEffect(() => {
+    // Close the ai conversation form if the user clicks outside the ui.
     const handleClickOutside = (event: MouseEvent) => {
       if (
         containerRef.current &&
@@ -80,46 +75,24 @@ export const Chatbot = () => {
     setIsOpen(!isOpen);
   };
 
+  const openCloseStyles = isOpen
+    ? "max-w-xl h-[704px] bg-zinc-100 text-zinc-950 border"
+    : " max-w-[64px] h-[64px] bg-blue-600 text-white rounded-full animate-breathe";
+
   return (
     <div
       ref={containerRef}
-      className={`absolute bottom-0 right-0 z-20 transition-all ease-in-out duration-200 shadow-xl ${
-        isOpen
-          ? "max-w-xl h-[704px] bg-zinc-100 text-zinc-950 border"
-          : " max-w-[64px] h-[64px] bg-blue-600 text-white rounded-full animate-breathe"
-      } w-full`}
+      className={`absolute bottom-0 right-0 z-20 transition-all ease-in-out duration-200 shadow-xl w-full ${openCloseStyles}`}
     >
-      <div
-        className={`p-6 ${
-          isOpen ? "border-zinc-300 border-b" : ""
-        } cursor-pointer`}
-        onClick={toggleOpen}
-      >
-        {isOpen ? <ChevronDownIcon /> : <ChevronUpIcon />}
-      </div>
+      {/* Ai open/close controls */}
+      <Controls isOpen={isOpen} toggleOpen={toggleOpen} />
+
       {isOpen && (
         <>
-          <div className="overflow-auto h-[400px]" ref={messagesRef}>
-            {response.map((message: any, index: number) => (
-              <div
-                key={index}
-                className={`${
-                  message.role === "assistant" ? "text-left" : "text-right"
-                }`}
-              >
-                <div className="border-b border-zinc-300 p-6 whitespace-pre-wrap overflow-x-hidden break-words">
-                  {message.role === "assistant" ? (
-                    <strong className="mr-2 text-lg">Assistant</strong>
-                  ) : null}
-                  {message.role === "user" ? (
-                    <strong className="ml-2 text-lg">You</strong>
-                  ) : null}
-                  <Markdown response={message.content} />
-                </div>
-              </div>
-            ))}
-            {fetcherIsLoading ? <Loader /> : null}
-          </div>
+          {/* Ai/User conversation */}
+          <Conversation messages={messages} isLoading={isLoading} />
+
+          {/* User input form */}
           <fetcher.Form
             method="POST"
             action="/chatbot"
@@ -135,7 +108,7 @@ export const Chatbot = () => {
             <input
               type="hidden"
               name="chatThread"
-              value={JSON.stringify(response)}
+              value={JSON.stringify(messages)}
             />
             <button className="bg-blue-500 h-14 px-6 hover:bg-blue-600 font-semibold text-white">
               Send
@@ -163,7 +136,7 @@ function getSystemPrompt(enrollments: string, allCourses: string) {
 
     1. Help the user with information about the courses offered. 
     2. Most importantly always consider the time conflict between the course the user is asking about and their current schedule, you must always check. 
-    3. You will address the user as Mandy.
+    3. You will address the user as Amanda.
     4. Respond with Markdown.
 
     You cannot: 
