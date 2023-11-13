@@ -130,7 +130,7 @@ export const Chatbot = () => {
               name="content"
               rows={3}
               className="text-zinc-950 bg-zinc-200 p-4 border border-zinc-300 w-full text-lg"
-              placeholder="Chat about course times and your own schedule."
+              placeholder="Ask me about course details, schedule building, potential conflicts, or suggestions for courses to take."
             />
             <input
               type="hidden"
