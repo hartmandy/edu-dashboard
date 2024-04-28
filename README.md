@@ -1,6 +1,6 @@
 ## EDU DASHBOARD
 
-View live demo: https://edu-dashboard-neon.vercel.app 
+This was built with Planetscale, which no longer has a free tier (which means this demo is no longer supported with a db). If you'd like to see a demo, please reach out!
 
 # Welcome to Remix!
 
