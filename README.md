@@ -1,6 +1,6 @@
 ## EDU DASHBOARD
 
-This was built with Planetscale, which no longer has a free tier (which means this demo is no longer supported with a db). If you'd like to see a demo, please reach out!
+This was built with Planetscale, which no longer has a free tier (which means this demo is no longer supported with a db). Take a look at the screenshots below to see it in action!
 
 AI-powered chatbot assistant aimed at simplifying the course selection and schedule creation process for students. Utilizing OpenAI's API, this chatbot aid student's in picking out courses and working within their semester schedule.
 
